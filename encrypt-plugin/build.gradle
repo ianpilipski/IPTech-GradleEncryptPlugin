@@ -1,0 +1,47 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'maven-publish'
+}
+
+version = '0.0.1-SNAPSHOT'
+group = 'com.iptech.gradle'
+description = 'A plugin that has tasks for working with encrypted credentials'
+
+sourceCompatibility = 1.8
+
+pluginBundle {
+    website = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
+    vcsUrl = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
+    tags = ['encryption', 'passwords', 'files', 'iptech']
+}
+
+gradlePlugin {
+    plugins {
+        encryptPlugin {
+            id = 'com.iptech.gradle.encrypt-plugin'
+            displayName = 'IPTech Encrypt Plugin'
+            description = 'A plugin that has tasks for working with encrypted credentials'
+            implementationClass = 'com.iptech.gradle.encrypt.EncryptPlugin'
+        }
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation gradleApi()
+
+    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+}
+
+test {
+    dependsOn cleanTest
+    testLogging {
+        showStandardStreams = true
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}

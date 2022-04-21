@@ -1,0 +1,5 @@
+
+
+rootProject.name='iptech-encryptplugin'
+include 'encrypt-plugin'
+

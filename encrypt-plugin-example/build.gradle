@@ -1,0 +1,13 @@
+buildscript {
+    dependencies {
+        classpath group: 'com.iptech.gradle', name: 'encrypt-plugin'
+    }
+}
+
+apply plugin: 'com.iptech.gradle.encrypt-plugin'
+
+
+encrypt {
+    password = 'dood'
+    encryptDir 'myEncryptedDir'
+}

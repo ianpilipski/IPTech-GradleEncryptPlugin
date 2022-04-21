@@ -1,0 +1,8 @@
+rootProject.name = 'encrypt-plugin-example'
+
+includeBuild('../encrypt-plugin') {
+    dependencySubstitution {
+        substitute module("com.iptech.gradle:encrypt-plugin") with project(":")
+        //substitute module('gradle.plugin.com.iptech.gradle:encrypt-plugin') with project(':')
+    }
+}
