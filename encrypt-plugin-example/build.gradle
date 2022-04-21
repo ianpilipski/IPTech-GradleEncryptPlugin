@@ -9,5 +9,7 @@ apply plugin: 'com.iptech.gradle.encrypt-plugin'
 
 encrypt {
     password = 'dood'
-    encryptDir 'myEncryptedDir'
+    encryptedFiles {
+        from = project.layout.dir('myEncryptedDir')
+    } 
 }

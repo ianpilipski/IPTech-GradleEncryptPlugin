@@ -13,6 +13,14 @@ class SpecResolver {
         this.project = project
     }
 
+    File getOutputFile(File srcFile, boolean encrypt) {
+        if(encrypt) {
+            String encryptedName = "${srcFile.name}.encrypted"
+            return new File(srcFile.parentFile, encryptedName)
+        }
+        return new File(srcFile.parentFile, srcFile.name.substring(0, srcFile.name.length() - '.encrypted'.length()))
+    }
+
     Iterable<File> getFiles(EncryptedFilesSpec spec, boolean encrypt) {
         getFiles([spec], encrypt)
     }
@@ -20,7 +28,7 @@ class SpecResolver {
     Iterable<File> getFiles(Iterable<EncryptedFilesSpec> specs, boolean encrypt) {
         Set<File> retVal = []
         specs.each { EncryptedFilesSpec spec ->
-            project.fileTree(spec.from.get()).matching(spec).visit { FileVisitDetails fvd ->
+            project.fileTree(spec.from).matching(spec).visit { FileVisitDetails fvd ->
                 if(isFileValid(fvd.file, encrypt)) retVal.add(fvd.file)
             }
         }

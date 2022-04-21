@@ -5,7 +5,6 @@ import com.iptech.gradle.encrypt.internal.PluginContext
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
-import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 
@@ -67,6 +66,10 @@ abstract class EncryptExtension {
         decryptFile(file, password, true)
     }
 
+    File decryptFile(Object file, boolean deleteOnClose) {
+        decryptFile(file, password.get(), deleteOnClose)
+    }
+
     File decryptFile(Object file, String password, boolean deleteOnClose) {
         decryptFile(context.project.file(file), password, deleteOnClose)
     }
@@ -80,10 +83,10 @@ abstract class EncryptExtension {
     }
 
     Iterable<File> decryptFiles(EncryptedFilesSpec spec) {
-        context.executor.decryptFiles(context.resolver.getFiles(spec, false), determinePassword(spec.password), spec.deleteOnClose.getOrElse(true))
+        context.executor.decryptFiles(context.resolver.getFiles(spec, false), determinePassword(spec.password), spec.deleteOnClose)
     }
 
-    private String determinePassword(Provider<String> value) {
-        value.isPresent() ? value.get() : password.get()
+    private String determinePassword(String value) {
+        (value!=null) ? value : password.get()
     }
 }

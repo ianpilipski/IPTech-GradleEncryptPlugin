@@ -7,7 +7,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.reflect.ObjectInstantiationException
-import org.gradle.api.specs.Spec
 
 @CompileStatic
 class PluginContext {
@@ -18,7 +17,7 @@ class PluginContext {
     PluginContext(Project project) {
         this.project = project
         this.resolver = new SpecResolver(project)
-        this.executor = new CryptoExecutor(project)
+        this.executor = new CryptoExecutor(resolver)
     }
 
     public <T> T newInstance(Class<? extends T> aClass, Object... objects) throws ObjectInstantiationException {
@@ -30,7 +29,7 @@ class PluginContext {
     }
 
     DefaultEncryptedFilesSpec encryptedFilesSpecFromAction(Action<? extends EncryptedFilesSpec> action) {
-        DefaultEncryptedFilesSpec spec = newInstance(DefaultEncryptedFilesSpec.class)
+        DefaultEncryptedFilesSpec spec = new DefaultEncryptedFilesSpec(project)
         action.execute(spec)
         return spec
     }

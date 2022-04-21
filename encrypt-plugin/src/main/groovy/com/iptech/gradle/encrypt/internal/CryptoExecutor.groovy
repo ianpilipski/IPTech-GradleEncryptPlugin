@@ -1,29 +1,34 @@
 package com.iptech.gradle.encrypt.internal
 
-
 import groovy.transform.CompileStatic
-import org.gradle.api.Project
 
 @CompileStatic
 class CryptoExecutor {
     static final List<File> cleanupFiles = []
 
     CryptoHandler cryptoHandler
+    SpecResolver resolver
 
-    CryptoExecutor(Project project) {
+    CryptoExecutor(SpecResolver resolver) {
         this.cryptoHandler = new CryptoHandler()
+        this.resolver = resolver
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             void run() {
-                cleanupFiles.each {
-                    try {
-                        if(it.exists()) {
-                            it.delete()
-                        }
-                    } catch(Exception) {}
-                }
+                deleteDecryptedFiles()
             }
         })
+    }
+
+    void deleteDecryptedFiles() {
+        cleanupFiles.each {
+            try {
+                if(it.exists()) {
+                    it.delete()
+                }
+            } catch(Exception) {}
+        }
+        cleanupFiles.clear()
     }
 
     String decryptString(String value, String password) { cryptoHandler.decrypt(value, password) }
@@ -54,15 +59,14 @@ class CryptoExecutor {
         }
 
         inputFiles.each { File srcFile ->
+            File outFile = resolver.getOutputFile(srcFile, encrypt)
             if(encrypt) {
                 String encryptedName = "${srcFile.name}.encrypted"
                 println "Encrypting: ${srcFile.path} ==> ${encryptedName}"
-                File outFile = new File(srcFile.parentFile, encryptedName)
                 outFile.bytes = cryptoHandler.encrypt(srcFile.bytes, password)
                 outputFiles.add(outFile)
             } else {
                 println "Decrypting ${srcFile.path}"
-                File outFile = new File(srcFile.parentFile, srcFile.name.substring(0, srcFile.name.length() - '.encrypted'.length()))
                 outFile.bytes = cryptoHandler.decrypt(srcFile.bytes, password)
                 outputFiles.add(outFile)
 
@@ -76,9 +80,7 @@ class CryptoExecutor {
     }
 
     private static void addFileToCleanup(File file) {
-        if(cleanupFiles.size()==0) {
-            println 'Will delete decrypted files on close. To keep them around use --keepDecrypted on the commandline.'
-        }
+        println "Will delete decrypted file ${file.name} files on close. To keep them around use --keepDecrypted on the commandline."
         file.deleteOnExit()
         cleanupFiles.add(file)
     }

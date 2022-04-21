@@ -52,7 +52,7 @@ class CryptoExecutorTest extends Specification {
         buildFile << """
             task runMyTest {
                 doLast {
-                    encrypt.decryptFile('testfile.encrypted', 'hello')
+                    encrypt.decryptFile('testfile.encrypted', 'hello', false)
                 }
             }
         """
@@ -76,7 +76,7 @@ class CryptoExecutorTest extends Specification {
             
             task runMyTest {
                 doLast {
-                    encrypt.decryptFile('testfile.encrypted')
+                    encrypt.decryptFile('testfile.encrypted', false)
                 }
             }
         """

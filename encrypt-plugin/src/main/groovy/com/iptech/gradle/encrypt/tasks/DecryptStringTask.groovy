@@ -1,8 +1,7 @@
 package com.iptech.gradle.encrypt.tasks
 
-import com.iptech.gradle.encrypt.internal.CryptoHandler
+
 import groovy.transform.CompileStatic
-import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction

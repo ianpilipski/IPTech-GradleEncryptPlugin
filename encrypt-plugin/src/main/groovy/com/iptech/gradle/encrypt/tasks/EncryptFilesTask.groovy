@@ -20,12 +20,21 @@ abstract class EncryptFilesTask extends EncryptPluginDefaultTask {
     EncryptFilesTask() {
         outputFilesSet = []
         encryptedFilesSpecs = []
+
+        outputs.upToDateWhen {
+            boolean retVal = true
+            inputFiles.each {File f ->
+                File outFile = context.resolver.getOutputFile(f, true)
+                if(!outFile.exists()) {
+                    retVal = false
+                }
+            }
+            return retVal
+        }
     }
 
     void encryptedFiles(Action<? extends EncryptedFilesSpec> action) {
-        EncryptedFilesSpec spec = context.objectFactory.newInstance(DefaultEncryptedFilesSpec.class)
-        action.execute(spec)
-        encryptedFiles(spec)
+        encryptedFiles(context.encryptedFilesSpecFromAction(action))
     }
 
     void encryptedFiles(Iterable<EncryptedFilesSpec> value) {
@@ -39,8 +48,9 @@ abstract class EncryptFilesTask extends EncryptPluginDefaultTask {
     @TaskAction
     void execute() {
         String taskPass = password.getOrNull()
+        println encryptedFilesSpecs.size()
         encryptedFilesSpecs.each { EncryptedFilesSpec it ->
-            String pass = it.password.getOrElse(taskPass)
+            String pass = it.password ?: taskPass
             outputFilesSet.addAll(context.executor.encryptFiles(context.resolver.getFiles(it, true), pass))
         }
     }

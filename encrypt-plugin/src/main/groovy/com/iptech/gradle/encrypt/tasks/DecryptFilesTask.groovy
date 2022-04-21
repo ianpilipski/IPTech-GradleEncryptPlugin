@@ -1,6 +1,6 @@
 package com.iptech.gradle.encrypt.tasks
 
-import com.iptech.gradle.encrypt.DefaultEncryptedFilesSpec
+
 import com.iptech.gradle.encrypt.api.EncryptedFilesSpec
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
@@ -23,6 +23,17 @@ abstract class DecryptFilesTask extends EncryptPluginDefaultTask {
     DecryptFilesTask() {
         outputFilesSet = []
         encryptedFilesSpecs = []
+
+        outputs.upToDateWhen {
+            boolean retVal = true
+            inputFiles.each {File f ->
+                File outFile = context.resolver.getOutputFile(f, false)
+                if(!outFile.exists()) {
+                    retVal = false
+                }
+            }
+            return retVal
+        }
     }
 
     void encryptedFiles(Action<? extends EncryptedFilesSpec> action) {
@@ -40,6 +51,7 @@ abstract class DecryptFilesTask extends EncryptPluginDefaultTask {
     @Option(option = "keepDecrypted", description = "Does not delete the decrypted files after running decrypt")
     private void setKeepDecrypted() {
         keepAll = true
+        deleteOnClose.set(false)
     }
 
     @TaskAction
@@ -47,8 +59,8 @@ abstract class DecryptFilesTask extends EncryptPluginDefaultTask {
         String taskPass = password.getOrNull()
         boolean taskDelete = deleteOnClose.getOrElse(true)
         encryptedFilesSpecs.each { EncryptedFilesSpec it ->
-            String pass = it.password.getOrElse(taskPass)
-            boolean del = it.deleteOnClose.getOrElse(taskDelete)
+            String pass = it.password ?: taskPass
+            boolean del = it.deleteOnClose
             if(keepAll) del = false
             outputFilesSet.addAll(context.executor.decryptFiles(context.resolver.getFiles(it, false), pass, del))
         }

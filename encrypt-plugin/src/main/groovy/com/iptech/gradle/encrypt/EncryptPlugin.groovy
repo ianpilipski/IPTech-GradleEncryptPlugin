@@ -1,11 +1,12 @@
 package com.iptech.gradle.encrypt
 
-import com.iptech.gradle.encrypt.api.EncryptedFilesSpec
+
 import com.iptech.gradle.encrypt.internal.PluginContext
 import com.iptech.gradle.encrypt.tasks.DecryptFilesTask
 import com.iptech.gradle.encrypt.tasks.DecryptStringTask
 import com.iptech.gradle.encrypt.tasks.EncryptFilesTask
 import com.iptech.gradle.encrypt.tasks.EncryptPluginDefaultTask
+import com.iptech.gradle.encrypt.tasks.EncryptStringTask
 import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -20,7 +21,13 @@ class EncryptPlugin implements Plugin<Project> {
         EncryptExtension encryptExtension = project.extensions.create('encrypt', EncryptExtension, pc)
 
         establishConventions(project, encryptExtension)
-        createTasks(project, encryptExtension)
+        project.afterEvaluate {
+            createTasks(project, encryptExtension)
+        }
+
+        project.gradle.buildFinished {
+            pc.executor.deleteDecryptedFiles()
+        }
     }
 
     private void establishConventions(Project project, EncryptExtension encryptExtension) {
