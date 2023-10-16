@@ -1,29 +1,29 @@
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'com.gradle.plugin-publish' version '1.1.0'
     id 'maven-publish'
 }
 
-version = '0.0.1-SNAPSHOT'
+version = pluginVersion
 group = 'com.iptech.gradle'
 description = 'A plugin that has tasks for working with encrypted credentials'
 
-sourceCompatibility = 1.8
-
-pluginBundle {
-    website = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
-    vcsUrl = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
-    tags = ['encryption', 'passwords', 'files', 'iptech']
+java {
+    sourceCompatibility = 1.8
 }
 
 gradlePlugin {
+    website = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
+    vcsUrl = 'https://github.com/ianpilipski/IPTech-EncryptPlugin'
+    
     plugins {
         encryptPlugin {
             id = 'com.iptech.gradle.encrypt-plugin'
             displayName = 'IPTech Encrypt Plugin'
             description = 'A plugin that has tasks for working with encrypted credentials'
             implementationClass = 'com.iptech.gradle.encrypt.EncryptPlugin'
+            tags = ['encryption', 'passwords', 'files', 'iptech']
         }
     }
 }
@@ -42,16 +42,25 @@ publishing {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation gradleApi()
 
-    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+    //testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+    testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+    testImplementation "org.spockframework:spock-junit4"  // you can remove this if your code does not rely on old JUnit 4 rules
+
+    //junit
+    //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 test {
+    useJUnitPlatform()
+
     dependsOn cleanTest
     testLogging {
         showStandardStreams = true

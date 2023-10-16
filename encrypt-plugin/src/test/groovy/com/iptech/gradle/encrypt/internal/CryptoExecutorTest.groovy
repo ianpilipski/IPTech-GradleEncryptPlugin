@@ -56,7 +56,7 @@ class CryptoExecutorTest extends Specification {
                 }
             }
         """
-        File decryptedFile = new File('testfile', testProjectDir.getRoot())
+        File decryptedFile = new File(testProjectDir.getRoot().getPath(), 'testfile')
 
         when:
         def result = runMyTest()
@@ -80,7 +80,7 @@ class CryptoExecutorTest extends Specification {
                 }
             }
         """
-        File decryptedFile = new File('testfile', testProjectDir.getRoot())
+        File decryptedFile = new File(testProjectDir.getRoot().getPath(), 'testfile')
 
         when:
         def result = runMyTest()
